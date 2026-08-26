@@ -400,27 +400,27 @@
     /* =========================
        AI CHAT
        ========================= */
-
     function sendMessage() {
+  const user = auth.currentUser;
+  const message = document.getElementById("message").value.trim();
+  const response = document.getElementById("response");
 
-      const message =
-        document.getElementById("message").value;
+  if (!user) {
+    response.innerText = "Please login first to use AI Chat.";
+    return;
+  }
 
-      const response =
-        document.getElementById("response");
+  if (message === "") {
+    response.innerText = "Please type a message first.";
+    return;
+  }
 
-      if (message.trim() === "") {
+  response.innerText =
+    "You said: " + message +
+    "\n\nAI connection will be added in the next step.";
+}
 
-        response.innerText =
-          "Please type a message first.";
-
-        return;
-      }
-
-      response.innerText =
-        "You said: " + message +
-        "\n\nAI connection will be added in the next step.";
-    }
+   
 
   </script>
 
