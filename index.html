@@ -400,7 +400,7 @@
     /* =========================
        AI CHAT
        ========================= */
-    function sendMessage() {
+   async function sendMessage() {
   const user = auth.currentUser;
   const message = document.getElementById("message").value.trim();
   const response = document.getElementById("response");
@@ -415,13 +415,13 @@
     return;
   }
 
+  response.innerText = "Thinking...";
+
+  // AI backend connection will be added next.
   response.innerText =
     "You said: " + message +
     "\n\nAI connection will be added in the next step.";
 }
-
-   
-
   </script>
 
 </body>
