@@ -400,7 +400,7 @@
     /* =========================
        AI CHAT
        ========================= */
-   async function sendMessage() {
+ async function sendMessage() {
   const user = auth.currentUser;
   const message = document.getElementById("message").value.trim();
   const response = document.getElementById("response");
@@ -417,12 +417,32 @@
 
   response.innerText = "Thinking...";
 
-  // AI backend connection will be added next.
-  response.innerText =
-    "You said: " + message +
-    "\n\nAI connection will be added in the next step.";
-}
-  </script>
+  const SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbzoBXhF55CHDYYqu6mIOpH4CH3hSlVTtYxpAcxJDvXmwGGszLhLrz5d1paSPv_KsNg/exec";
 
-</body>
-</html>
+  try {
+    const result = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        message: message
+      })
+    });
+
+    const data = await result.json();
+
+    if (data.error) {
+      response.innerText = "Error: " + data.error;
+      return;
+    }
+
+    response.innerText =
+      data.response || "No response received.";
+
+  } catch (error) {
+    response.innerText =
+      "Connection error: " + error.message;
+  }
+}
