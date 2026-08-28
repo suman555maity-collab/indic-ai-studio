@@ -1,284 +1,453 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head> 
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Indic AI Studio</title>
-  <script
-  src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>  
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js">
-      </script>
-  <style>    
-    * {      box-sizing: border-box;    }
-    html, body {      margin: 0;      padding: 0;      width: 100%;      height: 100%;      font-family: Inter, Arial, sans-serif;      background: #09090b;      color: #f4f4f5;    }
-    body {      overflow: hidden;    }
-    button,    textarea,    input {      font-family: inherit;    }
-    /* =========================       APP LAYOUT       ========================= */
-    .app {      display: flex;      width: 100%;      height: 100vh;      background:        radial-gradient(circle at 70% 10%, rgba(99,102,241,.12), transparent 30%),        radial-gradient(circle at 20% 90%, rgba(139,92,246,.10), transparent 30%),        #09090b;    }
-    /* =========================       SIDEBAR       ========================= */
-    .sidebar {      width: 260px;      background: rgba(17,17,20,.92);      border-right: 1px solid rgba(255,255,255,.08);      display: flex;      flex-direction: column;      padding: 20px 15px;      flex-shrink: 0;    }
-    .brand {      display: flex;      align-items: center;      gap: 12px;      padding: 8px 10px 25px;    }
-    .brand-icon {      width: 42px;      height: 42px;      border-radius: 13px;      display: flex;      align-items: center;      justify-content: center;      background: linear-gradient(135deg,#6366f1,#8b5cf6);      font-size: 21px;      box-shadow: 0 8px 25px rgba(99,102,241,.25);    }
-    .brand-text strong {      display: block;      font-size: 16px;    }
-    .brand-text span {      font-size: 11px;      color: #71717a;    }
-    .new-chat {      width: 100%;      border: 1px solid rgba(255,255,255,.1);      background: rgba(255,255,255,.05);      color: white;      padding: 13px;      border-radius: 12px;      cursor: pointer;      margin-bottom: 25px;      transition: .2s;    }
-    .new-chat:hover {      background: rgba(255,255,255,.09);    }
-    .menu-title {      color: #71717a;      font-size: 11px;      text-transform: uppercase;      letter-spacing: 1px;      padding: 0 10px 10px;    }
-    .menu-item {      padding: 12px;      border-radius: 10px;      color: #a1a1aa;      cursor: pointer;      margin-bottom: 4px;      transition: .2s;    }
-    .menu-item:hover,    .menu-item.active {      color: white;      background: rgba(255,255,255,.06);    }
-    .sidebar-bottom {      margin-top: auto;      border-top: 1px solid rgba(255,255,255,.07);      padding-top: 15px;    }
-    .user-card {      display: flex;      align-items: center;      gap: 10px;      padding: 10px;      border-radius: 10px;      background: rgba(255,255,255,.04);    }
-    .avatar {      width: 35px;      height: 35px;      border-radius: 50%;      display: flex;      align-items: center;      justify-content: center;      background: #27272a;    }
-    .user-email {      font-size: 11px;      color: #a1a1aa;      overflow: hidden;      text-overflow: ellipsis;      white-space: nowrap;    }
-    /* =========================       MAIN       ========================= */
-    .main {      flex: 1;      display: flex;      flex-direction: column;      min-width: 0;    }
-    .topbar {      height: 70px;      display: flex;      align-items: center;      justify-content: space-between;      padding: 0 25px;      border-bottom: 1px solid rgba(255,255,255,.07);      background: rgba(9,9,11,.65);      backdrop-filter: blur(15px);    }
-    .model-name {      font-size: 14px;      font-weight: 600;    }
-    .model-status {      font-size: 11px;      color: #71717a;      margin-top: 3px;    }
-    .status {      display: flex;      align-items: center;      gap: 7px;      font-size: 12px;      color: #a1a1aa;    }
-    .status-dot {      width: 7px;      height: 7px;      border-radius: 50%;      background: #22c55e;      box-shadow: 0 0 10px rgba(34,197,94,.7);    }
-    /* =========================       CHAT       ========================= */
-    .chat {      flex: 1;      overflow-y: auto;      padding: 35px 20px 170px;    }
-    .chat-inner {      width: 100%;      max-width: 850px;      margin: auto;    }
-    .welcome {      text-align: center;      padding: 55px 20px 35px;    }
-    .welcome-logo {      width: 70px;      height: 70px;      margin: auto;      border-radius: 22px;      display: flex;      align-items: center;      justify-content: center;      background: linear-gradient(135deg,#6366f1,#8b5cf6);      font-size: 32px;      box-shadow: 0 15px 50px rgba(99,102,241,.25);    }
-    .welcome h1 {      font-size: 32px;      margin: 22px 0 10px;    }
-    .welcome p {      color: #71717a;      font-size: 14px;    }
-    .message {      display: flex;      gap: 13px;      margin: 25px 0;      animation: fadeIn .25s ease;    }
-    @keyframes fadeIn {      from {        opacity: 0;        transform: translateY(5px);      }      to {        opacity: 1;        transform: translateY(0);      }    }
-    .message.user {      justify-content: flex-end;    }
-    .message-avatar {      width: 34px;      height: 34px;      min-width: 34px;      border-radius: 11px;      display: flex;      align-items: center;      justify-content: center;      background: #27272a;    }
-    .message.user .message-avatar {      order: 2;      background: #3f3f46;    }
-    .bubble {      max-width: 75%;      padding: 13px 16px;      border-radius: 15px;      line-height: 1.55;      font-size: 14px;      white-space: pre-wrap;    }
-    .message.ai .bubble {      background: rgba(255,255,255,.05);      border: 1px solid rgba(255,255,255,.07);    }
-    .message.user .bubble {      background: linear-gradient(135deg,#4f46e5,#6366f1);      border-bottom-right-radius: 4px;    }
-    /* =========================       INPUT       ========================= */
-    .input-area {      position: fixed;      bottom: 0;      left: 260px;      right: 0;      padding: 20px;      background: linear-gradient(        transparent,        rgba(9,9,11,.95) 35%      );    }
-    .input-wrapper {      max-width: 850px;      margin: auto;      background: rgba(24,24,27,.92);      border: 1px solid rgba(255,255,255,.1);      border-radius: 18px;      padding: 10px;      display: flex;      align-items: flex-end;      gap: 10px;      box-shadow: 0 15px 50px rgba(0,0,0,.35);      backdrop-filter: blur(20px);    }
-    textarea {      flex: 1;      min-height: 45px;      max-height: 150px;      resize: none;      border: none;      outline: none;      background: transparent;      color: white;      padding: 12px;      font-size: 14px;    }
-    textarea::placeholder {      color: #52525b;    }
-    .send-btn {      width: 45px;      height: 45px;      border: none;      border-radius: 13px;      background: linear-gradient(135deg,#6366f1,#8b5cf6);      color: white;      cursor: pointer;      font-size: 18px;      transition: .2s;    }
-    .send-btn:hover {      transform: translateY(-2px);      box-shadow: 0 8px 25px rgba(99,102,241,.3);    }
-    .input-note {      text-align: center;      color: #52525b;      font-size: 10px;      margin-top: 8px;    }
-    /* =========================       AUTH MODAL       ========================= */
-    .auth-overlay {      position: fixed;      inset: 0;      background: rgba(0,0,0,.75);      backdrop-filter: blur(12px);      display: flex;      align-items: center;      justify-content: center;      z-index: 100;      padding: 20px;    }
-    .auth-card {      width: 100%;      max-width: 410px;      padding: 30px;      border-radius: 22px;      background: #18181b;      border: 1px solid rgba(255,255,255,.1);      box-shadow: 0 30px 100px rgba(0,0,0,.5);    }
-    .auth-card h2 {      text-align: center;      margin: 0 0 8px;    }
-    .auth-card p {      text-align: center;      color: #71717a;      font-size: 13px;      margin-bottom: 25px;    }
-    .auth-card input {      width: 100%;      padding: 13px;      margin-bottom: 10px;      border: 1px solid rgba(255,255,255,.1);      border-radius: 10px;      background: #09090b;      color: white;      outline: none;    }
-    .auth-actions {      display: flex;      gap: 10px;    }
-    .auth-actions button {      flex: 1;      padding: 12px;      border: none;      border-radius: 10px;      cursor: pointer;    }
-    .login-btn {      background: #6366f1;      color: white;    }
-    .signup-btn {      background: #27272a;      color: white;    }
-    #authMessage {      text-align: center;      font-size: 12px;      color: #a1a1aa;      margin-top: 15px;      min-height: 18px;    }
-    .logout-btn {      width: 100%;      margin-top: 10px;      padding: 10px;      border: none;      border-radius: 10px;      background: #27272a;      color: #a1a1aa;      cursor: pointer;    }
-    /* =========================       MOBILE       ========================= */
-    @media (max-width: 700px) {
-      .sidebar {        display: none;      }
-      .topbar {        padding: 0 15px;      }
-      .input-area {        left: 0;        padding: 12px;      }
-      .chat {        padding-top: 20px;        padding-bottom: 145px;      }
-      .welcome h1 {        font-size: 25px;      }
-      .bubble {        max-width: 85%;      }    }  </style></head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indic AI Studio</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 18px 25px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #cbd5e1;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .welcome,
+    .auth-box,
+    .chat-box {
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+    }
+
+    .welcome {
+      text-align: center;
+    }
+
+    .welcome h2 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .welcome p {
+      color: #64748b;
+      font-size: 17px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .feature {
+      background: #f8fafc;
+      padding: 22px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .feature h3 {
+      margin: 10px 0;
+    }
+
+    .auth-box {
+      margin-top: 30px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .auth-box h2 {
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      background: #111827;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #374151;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .auth-buttons button {
+      flex: 1;
+    }
+
+    #authMessage {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      min-height: 20px;
+    }
+
+    .user-info {
+      margin-top: 15px;
+      padding: 12px;
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+
+    .chat-box {
+      margin-top: 30px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 16px;
+      resize: vertical;
+    }
+
+    #response {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      min-height: 50px;
+      white-space: pre-wrap;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #64748b;
+    }
+  </style>
+</head>
+
 <body>
-<div class="app">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="brand">      <div class="brand-icon">✦</div>
-      <div class="brand-text">        <strong>Indic AI Studio</strong>        <span>AI Workspace</span>      </div>    </div>
-    <button class="new-chat" onclick="newChat()">      ＋ New Chat    </button>
-    <div class="menu-title">      Workspace    </div>
-    <div class="menu-item active">      AI Chat    </div>
-    <div class="menu-item">      File Analysis    </div>
-    <div class="menu-item">      Voice    </div>
-    <div class="menu-item">      Image Generation    </div>
-    <div class="sidebar-bottom">
-      <div class="user-card">
-        <div class="avatar">                  </div>
-        <div class="user-email" id="sidebarUser">          Not logged in        </div>
-      </div>
-    </div>
-  </aside>
 
-  <!-- MAIN -->
-  <main class="main">
-    <div class="topbar">
-      <div>        <div class="model-name">          Indic AI Assistant        </div>
-        <div class="model-status">          Gemini powered        </div>      </div>
-      <div class="status">        <span class="status-dot"></span>        Online      </div>
-    </div>
+  <header>
+    <h1>Indic AI Studio</h1>
+    <p>Your AI workspace</p>
+  </header>
 
-    <!-- CHAT -->
-    <section class="chat" id="chat">
-      <div class="chat-inner" id="chatInner">
-        <div class="welcome" id="welcome">
-          <div class="welcome-logo">            ✦          </div>
-          <h1>            How can I help you?          </h1>
-          <p>            Ask anything, write, analyze or explore ideas with Indic AI.          </p>
-        </div>
-      </div>
-    </section>
+  <div class="container">
 
-    <!-- INPUT -->
-    <div class="input-area">
-      <div class="input-wrapper">
-        <textarea          id="message"          placeholder="Message Indic AI..."          onkeydown="handleEnter(event)"        ></textarea>
-        <button          class="send-btn"          onclick="sendMessage()"        >          ↑        </button>
-      </div>
-      <div class="input-note">        Indic AI can make mistakes. Check important information.      </div>
-    </div>
-  </main>
-</div>
+    <div class="welcome">
+      <h2>Welcome to Indic AI Studio</h2>
+      <p>Chat, analyze files, use voice and explore AI-powered tools.</p>
 
-<!-- LOGIN MODAL -->
-<div class="auth-overlay" id="authOverlay">
-  <div class="auth-card">
-    <h2>Welcome back</h2>
-    <p>      Login to continue using Indic AI Studio    </p>
-    <input      type="email"      id="email"      placeholder="Email address"    >
-    <input      type="password"      id="password"      placeholder="Password"    >
-    <div class="auth-actions">
-      <button        class="login-btn"        onclick="login()"      >        Login      </button>
-      <button        class="signup-btn"        onclick="signUp()"      >        Sign Up      </button>
-    </div>
-    <div id="authMessage">    </div>
-    <button      class="logout-btn"      onclick="logout()"    >      Logout    </button>
-  </div>
-</div>
+      <div class="features">
+        <div class="feature">
+          <div>💬</div>
+          <h3>AI Chat</h3>
+          <p>Chat with your AI assistant.</p>
+        </div>
 
-<script>
-/* =========================   FIREBASE   ========================= */
-const firebaseConfig = {  apiKey: "AIzaSyAeEAcJdns8fczRw7eNmSYpL7WsiQYBnU",  authDomain: "indic-ai-studio.firebaseapp.com",  projectId: "indic-ai-studio",  storageBucket: "indic-ai-studio.firebasestorage.app",  messagingSenderId: "921887865500",  appId: "1:921887865500:web:ef7c22bfcf7c4616c00b59"};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+        <div class="feature">
+          <div>📁</div>
+          <h3>File Analysis</h3>
+          <p>Analyze your documents.</p>
+        </div>
 
-/* =========================   APPS SCRIPT   ========================= */
-const SCRIPT_URL ="https://script.google.com/macros/s/AKfycbzoBXhF55CHDYYqu6mIOpH4CH3hSlVTtYxpAcxJDvXmwGGszLhLrz5d1paSPv_KsNg/exec";
+        <div class="feature">
+          <div>🎤</div>
+          <h3>Voice</h3>
+          <p>Talk with your AI assistant.</p>
+        </div>
 
-/* =========================   SIGN UP   ========================= */
-function signUp() {
-  const email =    document.getElementById("email").value.trim();
-  const password =    document.getElementById("password").value;
-  const message =    document.getElementById("authMessage");
-  if (!email || !password) {    message.innerText =      "Please enter email and password.";    return;  }
-  if (password.length < 6) {    message.innerText =      "Password must be at least 6 characters.";    return;  }
-  auth.createUserWithEmailAndPassword(    email,    password  )  .then(() => {
-    message.innerText =      "Account created successfully!";
-  })  .catch((error) => {
-    message.innerText =      error.message;
-  });}
+        <div class="feature">
+          <div>🖼️</div>
+          <h3>Image Generation</h3>
+          <p>Create images with AI.</p>
+        </div>
+      </div>
+    </div>
 
-/* =========================   LOGIN   ========================= */
-function login() {
-  const email =    document.getElementById("email").value.trim();
-  const password =    document.getElementById("password").value;
-  const message =    document.getElementById("authMessage");
-  if (!email || !password) {    message.innerText =      "Please enter email and password.";    return;  }
-  auth.signInWithEmailAndPassword(    email,    password  )  .then(() => {
-    message.innerText =      "Login successful!";
-  })  .catch((error) => {
-    message.innerText =      error.message;
-  });}
+    <!-- Login / Signup -->
+    <div class="auth-box">
 
-/* =========================   LOGOUT   ========================= */
-function logout() {
-  auth.signOut()    .then(() => {
-      document.getElementById(        "authMessage"      ).innerText =        "You have been logged out.";
-    });
+      <h2>Login / Sign Up</h2>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your email"
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter your password"
+      >
+
+      <div class="auth-buttons">
+        <button onclick="signUp()">Sign Up</button>
+        <button onclick="login()">Login</button>
+      </div>
+
+      <button onclick="logout()">Logout</button>
+
+      <div id="authMessage">
+        Please login or create an account.
+      </div>
+
+      <div class="user-info" id="userInfo">
+        Not logged in.
+      </div>
+
+    </div>
+
+    <!-- AI Chat -->
+    <div class="chat-box">
+
+      <h2>Try the AI Chat</h2>
+
+      <textarea
+        id="message"
+        placeholder="Type your message here..."
+      ></textarea>
+
+      <button onclick="sendMessage()">Send</button>
+
+      <div id="response">
+        Your AI response will appear here.
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer>
+    © 2026 Indic AI Studio
+  </footer>
+
+
+  <script>
+
+    /* =========================
+       FIREBASE CONFIGURATION
+       ========================= */
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAeEAcJdns8fczRwte7NmSYpL7WsiQYBnU",
+      authDomain: "indic-ai-studio.firebaseapp.com",
+      projectId: "indic-ai-studio",
+      storageBucket: "indic-ai-studio.firebasestorage.app",
+      messagingSenderId: "921887865500",
+      appId: "1:921887865500:web:ef7c22bfcf7c4616c00b59"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+
+
+    /* =========================
+       SIGN UP
+       ========================= */
+
+    function signUp() {
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const message = document.getElementById("authMessage");
+
+      if (email === "" || password === "") {
+        message.innerText = "Please enter email and password.";
+        return;
+      }
+
+      if (password.length < 6) {
+        message.innerText =
+          "Password must be at least 6 characters.";
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          message.innerText =
+            "Account created successfully!";
+        })
+        .catch((error) => {
+          message.innerText = error.message;
+        });
+    }
+
+
+    /* =========================
+       LOGIN
+       ========================= */
+
+    function login() {
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const message = document.getElementById("authMessage");
+
+      if (email === "" || password === "") {
+        message.innerText = "Please enter email and password.";
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          message.innerText =
+            "Login successful!";
+        })
+        .catch((error) => {
+          message.innerText = error.message;
+        });
+    }
+
+
+    /* =========================
+       LOGOUT
+       ========================= */
+
+    function logout() {
+
+      auth.signOut()
+        .then(() => {
+          document.getElementById("authMessage").innerText =
+            "You have been logged out.";
+
+          document.getElementById("userInfo").innerText =
+            "Not logged in.";
+        })
+        .catch((error) => {
+          document.getElementById("authMessage").innerText =
+            error.message;
+        });
+    }
+
+
+    /* =========================
+       AUTH STATE
+       ========================= */
+
+    auth.onAuthStateChanged((user) => {
+
+      const userInfo = document.getElementById("userInfo");
+
+      if (user) {
+
+        userInfo.innerText =
+          "Logged in as: " + user.email;
+
+      } else {
+
+        userInfo.innerText =
+          "Not logged in.";
+
+      }
+
+    });
+
+
+    /* =========================
+       AI CHAT
+       ========================= */
+ async function sendMessage() {
+  const user = auth.currentUser;
+  const message = document.getElementById("message").value.trim();
+  const response = document.getElementById("response");
+
+  if (!user) {
+    response.innerText = "Please login first to use AI Chat.";
+    return;
+  }
+
+  if (message === "") {
+    response.innerText = "Please type a message first.";
+    return;
+  }
+
+  response.innerText = "Thinking...";
+
+  const SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbzoBXhF55CHDYYqu6mIOpH4CH3hSlVTtYxpAcxJDvXmwGGszLhLrz5d1paSPv_KsNg/exec";
+
+  try {
+    const result = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        message: message
+      })
+    });
+
+    const data = await result.json();
+
+    if (data.error) {
+      response.innerText = "Error: " + data.error;
+      return;
+    }
+
+    response.innerText =
+      data.response || "No response received.";
+
+  } catch (error) {
+    response.innerText =
+      "Connection error: " + error.message;
+  }
 }
+  </script>
 
-/* =========================   AUTH STATE   ========================= */
-auth.onAuthStateChanged((user) => {
-  const overlay =    document.getElementById("authOverlay");
-  const sidebarUser =    document.getElementById("sidebarUser");
-  if (user) {
-    overlay.style.display = "none";
-    sidebarUser.innerText =      user.email;
-  } else {
-    overlay.style.display = "flex";
-    sidebarUser.innerText =      "Not logged in";
-  }
-});
-
-/* =========================   SEND MESSAGE   ========================= */
-async function sendMessage() {
-  const user = auth.currentUser;
-  const input =    document.getElementById("message");
-  const chat =    document.getElementById("chatInner");
-  const text =    input.value.trim();
-  if (!user) {
-    document.getElementById(      "authMessage"    ).innerText =      "Please login first.";
-    return;  }
-  if (!text) {    return;  }
-  document.getElementById(    "welcome"  ).style.display = "none";
-
-  /* USER MESSAGE */
-  addMessage(    text,    "user"  );
-  input.value = "";
-
-  /* AI THINKING */
-  const thinking =    addMessage(      "Thinking...",      "ai"    );
-
-  try {
-    const result =      await fetch(        SCRIPT_URL,        {          method: "POST",
-          headers: {            "Content-Type":              "text/plain;charset=utf-8"          },
-          body: JSON.stringify({            message: text          })        }      );
-
-    const data =      await result.json();
-
-    if (data.error) {
-      thinking.querySelector(        ".bubble"      ).innerText =        "Error: " + data.error;
-      return;    }
-
-    thinking.querySelector(      ".bubble"    ).innerText =      data.response ||      "No response received.";
-
-  } catch (error) {
-    thinking.querySelector(      ".bubble"    ).innerText =      "Connection error: " +      error.message;
-  }
-}
-
-/* =========================   ADD MESSAGE   ========================= */
-function addMessage(  text,  type) {
-  const wrapper =    document.createElement("div");
-  wrapper.className =    "message " + type;
-
-  const avatar =    document.createElement("div");
-  avatar.className =    "message-avatar";
-  avatar.innerText =    type === "user"      ? " "      : "✦";
-
-  const bubble =    document.createElement("div");
-  bubble.className =    "bubble";
-  bubble.innerText =    text;
-
-  wrapper.appendChild(    avatar  );
-  wrapper.appendChild(    bubble  );
-
-  document    .getElementById("chatInner")    .appendChild(wrapper);
-
-  const chat =    document.getElementById("chat");
-  chat.scrollTop =    chat.scrollHeight;
-
-  return wrapper;}
-
-/* =========================   NEW CHAT   ========================= */
-function newChat() {
-  const chat =    document.getElementById("chatInner");
-  chat.innerHTML = `
-    <div class="welcome" id="welcome">
-      <div class="welcome-logo">        ✦      </div>
-      <h1>        How can I help you?      </h1>
-      <p>        Ask anything, write, analyze or explore ideas with Indic AI.      </p>
-    </div>
-  `;
-}
-
-/* =========================   ENTER TO SEND   ========================= */
-function handleEnter(event) {
-  if (    event.key === "Enter" &&    !event.shiftKey  ) {
-    event.preventDefault();
-    sendMessage();
-  }
-}
-</script>
-</body></html>
-
+</body>
+</html>
