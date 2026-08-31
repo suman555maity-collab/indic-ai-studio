@@ -219,20 +219,24 @@ input:focus {
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
 }
 
-    button {
-      margin-top: 12px;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      background: #111827;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
+ button {
+  margin-top: 12px;
+  padding: 13px 24px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: "Inter", Arial, sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-    button:hover {
-      background: #374151;
-    }
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.20);
+}
 
     .auth-buttons {
       display: flex;
