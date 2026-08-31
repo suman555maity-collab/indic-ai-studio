@@ -32,22 +32,39 @@
   min-height: 100vh;
 }
 
-    header {
-      background: #111827;
-      color: white;
-      padding: 18px 25px;
-      text-align: center;
-    }
+ /* =========================
+   MODERN MEDICAL HEADER
+   ========================= */
 
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-    }
+header {
+  background: rgba(255, 255, 255, 0.92);
+  color: #172033;
+  padding: 18px 25px;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+}
 
-    header p {
-      margin: 6px 0 0;
-      color: #cbd5e1;
-    }
+header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #2563eb, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
 
     .container {
       max-width: 900px;
