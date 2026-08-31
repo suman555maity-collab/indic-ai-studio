@@ -13,42 +13,7 @@
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-/* =========================
-   MOBILE OPTIMIZATION
-   ========================= */
 
-@media (max-width: 600px) {
-
-  .container {
-    margin: 25px auto;
-    padding: 14px;
-  }
-
-  .welcome {
-    padding: 40px 20px;
-  }
-
-  .welcome h2 {
-    font-size: 32px;
-  }
-
-  .auth-box,
-  .chat-box {
-    padding: 22px;
-  }
-
-  .auth-buttons {
-    flex-direction: column;
-  }
-
-  .auth-buttons button {
-    width: 100%;
-  }
-
-  button {
-    width: 100%;
-  }
-}
   <style>
     * {
       box-sizing: border-box;
@@ -361,6 +326,42 @@ textarea:focus {
   border-top: 1px solid #e2e8f0;
   background: rgba(255, 255, 255, 0.7);
 }
+/* =========================
+   MOBILE OPTIMIZATION
+   ========================= */
+
+@media (max-width: 600px) {
+
+  .welcome {
+    padding: 40px 20px;
+  }
+
+  .welcome h2 {
+    font-size: 32px;
+  }
+
+  .auth-box,
+  .chat-box {
+    padding: 22px;
+  }
+
+  .auth-buttons {
+    flex-direction: column;
+  }
+
+  .auth-buttons button {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  textarea {
+    height: 110px;
+  }
+}    
+ 
   </style>
 </head>
 
